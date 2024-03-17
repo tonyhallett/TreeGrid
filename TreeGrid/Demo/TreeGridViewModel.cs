@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 
 namespace TreeGrid
 {
-    public class TreeGridViewModel
+    public class TreeGridViewModel : ITreeGridViewModel
     {
         private ColumnManager _columnManager = new ColumnManager();
         public TreeGridViewModel()

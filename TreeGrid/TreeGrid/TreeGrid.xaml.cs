@@ -154,20 +154,26 @@ namespace TreeGrid
             var displayIndexBinding = new Binding
             {
                 Source = this,
-                Path = new PropertyPath($"ViewModel.ColumnManager.{this.ColumnNames[index]}.DisplayIndex")
+                Path = GetColumnManagerPropertyPath("DisplayIndex", index)
             };
 
             BindingOperations.SetBinding(child, Grid.ColumnProperty, displayIndexBinding);
-
-            var visibilityBinding = new Binding
+            if(index != 0)
             {
-                Source = this,
-                Path = new PropertyPath($"ViewModel.ColumnManager.{this.ColumnNames[index]}.IsVisible"),
-                Converter = new BooleanToVisibilityConverter()
-            };
+                var visibilityBinding = new Binding
+                {
+                    Source = this,
+                    Path = GetColumnManagerPropertyPath("IsVisible", index),
+                    Converter = new BooleanToVisibilityConverter()
+                };
 
-            BindingOperations.SetBinding(child, UIElement.VisibilityProperty, visibilityBinding);
+                BindingOperations.SetBinding(child, UIElement.VisibilityProperty, visibilityBinding);
+            }
+        }
 
+        private PropertyPath GetColumnManagerPropertyPath(string property, int index)
+        {
+            return new PropertyPath($"ViewModel.ColumnManager.{this.ColumnNames[index]}.{property}");
         }
 
         private UIElement Reparent(Panel panel, Grid grid)

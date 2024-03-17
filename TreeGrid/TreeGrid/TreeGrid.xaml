@@ -13,7 +13,8 @@
     <DockPanel>
         <ScrollViewer x:Name="GridHeaderScrollViewer" DockPanel.Dock="Top" VerticalScrollBarVisibility="Hidden"
                   HorizontalScrollBarVisibility="Hidden" HorizontalAlignment="Left">
-            <DataGrid Background="White" UIElement.PreviewKeyDown="DataGridColumnHeader_PreviewKeyDown" x:Name="GridHeader" AutomationProperties.Name="ColumnsHeader" BorderThickness="0">
+            <DataGrid x:Name="GridHeader" 
+                      UIElement.PreviewKeyDown="DataGridColumnHeader_PreviewKeyDown"  AutomationProperties.Name="ColumnsHeader" BorderThickness="0">
                 <DataGrid.Resources>
                     <Style x:Key="DataGridColumnHeaderStyle" TargetType="{x:Type DataGridColumnHeader}">
                         <Setter Property="Control.BorderThickness" Value="0 0 1 1"/>
@@ -47,8 +48,13 @@
                 </DataGrid.Resources>
             </DataGrid>
         </ScrollViewer>
-        <TreeView Control.MouseDoubleClick="TreeViewItem_MouseDoubleClick" x:Name="TreeView" ItemsSource="{Binding RelativeSource={RelativeSource AncestorType={
-    x:Type UserControl}}, Path=ViewModel.Items}">
+        <TreeView x:Name="TreeView" 
+                  Control.MouseDoubleClick="TreeViewItem_MouseDoubleClick"  
+                  VerticalAlignment="Stretch" 
+                  VirtualizingPanel.IsVirtualizing="True"
+                  BorderThickness="0"
+                  VirtualizingPanel.VirtualizationMode="Recycling"
+                  ItemsSource="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=ViewModel.Items}">
             <ItemsControl.ItemContainerStyle>
                 <Style>
                     <Setter Property="TreeViewItem.IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>

@@ -5,7 +5,7 @@ using System.Windows.Media;
 
 namespace TreeGrid
 {
-    public class TreeItem : ObservableBase
+    public class TreeItem : ObservableBase, ITreeItem
     {
         private bool _isSelected;
         private bool _isExpanded;

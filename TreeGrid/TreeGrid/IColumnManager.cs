@@ -4,8 +4,6 @@
     {
         ColumnData[] Columns { get; }
 
-        ColumnData GetFirstColumn();
-
         void SortColumnsArray();
     }
 }

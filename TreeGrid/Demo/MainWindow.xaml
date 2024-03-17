@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <StackPanel>
-        <local:TreeGridControl ColumnManager="{Binding ColumnManager}" Items="{Binding Items}">
+        <local:TreeGridControl ViewModel="{Binding ViewModel}">
             <local:TreeGridControl.ItemTemplate>
                 <DataTemplate>
                     <StackPanel>

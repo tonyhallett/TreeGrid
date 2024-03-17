@@ -48,11 +48,12 @@
             </DataGrid>
         </ScrollViewer>
         <TreeView Control.MouseDoubleClick="TreeViewItem_MouseDoubleClick" x:Name="TreeView" ItemsSource="{Binding RelativeSource={RelativeSource AncestorType={
-    x:Type UserControl}}, Path=Items}">
+    x:Type UserControl}}, Path=ViewModel.Items}">
             <ItemsControl.ItemContainerStyle>
                 <Style>
                     <Setter Property="TreeViewItem.IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
                     <Setter Property="TreeViewItem.IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
+                    <Setter Property="AutomationProperties.Name" Value="{Binding Name, StringFormat={}Node}"/>
                     <EventSetter Event="FrameworkElement.RequestBringIntoView" Handler="TreeViewItem_RequestBringIntoView"/>
                 </Style>
             </ItemsControl.ItemContainerStyle>

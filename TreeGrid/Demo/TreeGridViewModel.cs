@@ -8,7 +8,7 @@ namespace TreeGrid
         public TreeGridViewModel()
         {
             columnManagerImpl = new ColumnManager();
-            _items[0].UpdateWidth(columnManagerImpl.FirstColumn.Width.Value);
+            _items[0].AdjustWidth(columnManagerImpl.FirstColumn.Width.Value);
             TreeViewAutomationName = "DemoTreeView";
             SetItems(_items);
         }

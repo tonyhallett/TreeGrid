@@ -229,7 +229,7 @@ namespace TreeGrid
                 {
                     foreach(var treeItem in this.ViewModel.Items)
                     {
-                        treeItem.UpdateWidth(firstColumn.Width.Value);
+                        treeItem.AdjustWidth(firstColumn.Width.Value);
                     }
                 }
             };

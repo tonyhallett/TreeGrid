@@ -59,6 +59,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="TreeGrid\TreeItemBase.cs" />
     <Compile Include="TreeGrid\TreeGridViewModelBase.cs" />
     <Compile Include="TreeGrid\ColumnManagerBase.cs" />
     <Compile Include="TreeGrid\ColumnData.cs" />

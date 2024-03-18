@@ -22,7 +22,11 @@ namespace TreeGrid
                 }
             }
         }
-        public string Name { get; set; }
+        private string _name;
+        public string Name { 
+            get => this._name;
+            set => this.Set<string>(ref this._name, value, nameof(Name));
+        }
         public ObservableCollection<TreeItem> Children { get;  } = new ObservableCollection<TreeItem>();
 
         public bool IsSelected
@@ -78,21 +82,24 @@ namespace TreeGrid
         }
 
         private Brush SelectedItemInactiveBackColor = new SolidColorBrush(Colors.LightGray);
-        private Brush SelectedItemActiveBackColor = new SolidColorBrush(Colors.LightBlue);
         private Brush SelectedItemInactiveForeColor = new SolidColorBrush(Colors.Black);
+
+        private Brush SelectedItemActiveBackColor = new SolidColorBrush(Colors.LightBlue);
         private Brush SelectedItemActiveForeColor = new SolidColorBrush(Colors.White);
+        
+        private Brush NotSelectedForeground = new SolidColorBrush(Colors.Black);
         public Brush Foreground
         {
             get
             {
                 if (!this.IsSelected)
-                    return new SolidColorBrush(Colors.Pink);// ThemeManager.Instance.ForegroundColor;
+                    return new SolidColorBrush(Colors.Pink);
                 return !this.IsSelectionActive ? SelectedItemInactiveForeColor : SelectedItemActiveForeColor;
             }
         }
 
-        internal TreeItem Parent { get; set; }
-        public int WidthMultiplier => this.Parent != null ? this.Parent.WidthMultiplier + 1 : 2;
+        public ITreeItem Parent { get; set; }
+        public int WidthMultiplier => this.Parent != null ? (this.Parent as TreeItem).WidthMultiplier + 1 : 2;
 
         // just for now
         private GridLength _width;

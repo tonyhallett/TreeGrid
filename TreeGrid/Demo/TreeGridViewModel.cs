@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace TreeGrid
@@ -32,9 +33,16 @@ namespace TreeGrid
             }
         }
 
+        public string TreeViewAutomationName { get; } = "DemoTreeView";
+
         public void Sort(int columnIndex)
         {
             _columnManager.SortColumns(columnIndex);
+        }
+
+        internal void Update()
+        {
+            this._items[0].Name = "Root" + DateTime.Now.Second;
         }
     }
 }

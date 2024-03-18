@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
@@ -20,6 +21,150 @@ namespace TreeGrid
         private List<string> ColumnNames { get; set; }
 
         #region dependency properties
+
+
+
+        public Brush TreeViewBackground
+        {
+            get { return (Brush)GetValue(TreeViewBackgroundProperty); }
+            set { SetValue(TreeViewBackgroundProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for TreeViewBackground.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty TreeViewBackgroundProperty =
+            DependencyProperty.Register("TreeViewBackground", typeof(Brush), typeof(TreeGridControl), new PropertyMetadata(new SolidColorBrush(Colors.White)));
+
+
+
+        public Brush TreeViewForeground
+        {
+            get { return (Brush)GetValue(TreeViewForegroundProperty); }
+            set { SetValue(TreeViewForegroundProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for TreeViewForeground.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty TreeViewForegroundProperty =
+            DependencyProperty.Register("TreeViewForeground", typeof(Brush), typeof(TreeGridControl), new PropertyMetadata(new SolidColorBrush(Colors.Black)));
+
+
+
+        public Brush TreeGridControlBackground
+        {
+            get { return (Brush)GetValue(TreeGridControlBackgroundProperty); }
+            set { SetValue(TreeGridControlBackgroundProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for TreeGridControlBackground.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty TreeGridControlBackgroundProperty =
+            DependencyProperty.Register("TreeGridControlBackground", typeof(Brush), typeof(TreeGridControl) , new PropertyMetadata(new SolidColorBrush(Colors.White)));
+
+
+
+        public Brush HeaderBackground
+        {
+            get { return (Brush)GetValue(HeaderBackgroundProperty); }
+            set { SetValue(HeaderBackgroundProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for HeaderBackground.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty HeaderBackgroundProperty =
+            DependencyProperty.Register("HeaderBackground", typeof(Brush), typeof(TreeGridControl), new PropertyMetadata(new SolidColorBrush(Colors.White)));
+
+
+
+        public Brush HeaderForeground
+        {
+            get { return (Brush)GetValue(HeaderForegroundProperty); }
+            set { SetValue(HeaderForegroundProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for HeaderForeground.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty HeaderForegroundProperty =
+            DependencyProperty.Register("HeaderForeground", typeof(Brush), typeof(TreeGridControl), new PropertyMetadata(new SolidColorBrush(Colors.Black)));
+
+
+
+        public Brush HeaderGridLines
+        {
+            get { return (Brush)GetValue(HeaderGridLinesProperty); }
+            set { SetValue(HeaderGridLinesProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for HeaderGridLines.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty HeaderGridLinesProperty =
+            DependencyProperty.Register("HeaderGridLines", typeof(Brush), typeof(TreeGridControl), new PropertyMetadata(new SolidColorBrush(Colors.White)));
+
+
+
+        public Style HeaderStyle
+        {
+            get { return (Style)GetValue(HeaderStyleProperty); }
+            set { SetValue(HeaderStyleProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for HeaderStyle.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty HeaderStyleProperty =
+            DependencyProperty.Register("HeaderStyle", typeof(Style), typeof(TreeGridControl), new PropertyMetadata(null,OnHeaderStyleChanged));
+
+        private static void OnHeaderStyleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var control = (TreeGridControl)d;
+            control.SetHeaderStyle();
+        }
+
+        private void SetHeaderStyle()
+        {
+            // Get the FocusableAndClickableColumnHeaderStyle from the resources
+            Style focusableAndClickableStyle = this.Resources["FocusableAndClickableColumnHeaderStyle"] as Style;
+
+            // If a HeaderStyle is provided, use it as the base style
+            // Otherwise, use the DataGridColumnHeaderStyle as the base style
+            Style baseStyle = HeaderStyle ?? (this.Resources["DataGridColumnHeaderStyle"] as Style);
+
+            // Create a new style that is based on the base style
+            Style newStyle = new Style(typeof(DataGridColumnHeader), baseStyle);
+
+            // Merge the FocusableAndClickableColumnHeaderStyle with the new style
+            foreach (SetterBase setter in focusableAndClickableStyle.Setters)
+            {
+                newStyle.Setters.Add(setter);
+            }
+            foreach (TriggerBase trigger in focusableAndClickableStyle.Triggers)
+            {
+                newStyle.Triggers.Add(trigger);
+            }
+
+            // Apply the resulting style to the DataGrid's ColumnHeaderStyle property
+            GridHeader.ColumnHeaderStyle = newStyle;
+        }
+
+        public static readonly DependencyProperty HierarchicalDataTemplateProperty = DependencyProperty.Register(
+   nameof(HierarchicalDataTemplate),
+    typeof(HierarchicalDataTemplate),
+    typeof(TreeGridControl),
+    new PropertyMetadata(null, OnHierarchicalDataTemplateChanged));
+
+        public HierarchicalDataTemplate HierarchicalDataTemplate
+        {
+            get { return (HierarchicalDataTemplate)GetValue(HierarchicalDataTemplateProperty); }
+            set { SetValue(HierarchicalDataTemplateProperty, value); }
+        }
+
+        private static void OnHierarchicalDataTemplateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var control = (TreeGridControl)d;
+            control.SetHierarchicalDataTemplate();
+        }
+
+        private void SetHierarchicalDataTemplate()
+        {
+            var hdt = HierarchicalDataTemplate;
+            if (hdt == null)
+            {
+                hdt = FindResource("DefaultHierarchicalDataTemplate") as HierarchicalDataTemplate;
+            }
+            TreeView.ItemTemplate = hdt;
+        }
 
         public ITreeGridViewModel ViewModel
         {
@@ -97,12 +242,11 @@ namespace TreeGrid
         {
             var column = new DataGridTextColumn();
             var ColumnManager = ViewModel.ColumnManager;
-            // necessary to prevent duplicate column sort icons
+            // necessary to prevent duplicate column sort icons and not binding the  DataGridTextColumn.SortDirectionProperty
             BindingOperations.SetBinding(column, DataGridTextColumn.HeaderProperty, new Binding($"{columnName}") { Source = ColumnManager });
             BindingOperations.SetBinding(column, DataGridTextColumn.DisplayIndexProperty, new Binding($"{columnName}.DisplayIndex") { Source = ColumnManager, FallbackValue = 1, Mode = BindingMode.TwoWay });
             BindingOperations.SetBinding(column, DataGridTextColumn.WidthProperty, new Binding($"{columnName}.Width") { Source = ColumnManager, Mode = BindingMode.TwoWay });
             BindingOperations.SetBinding(column, DataGridTextColumn.VisibilityProperty, new Binding($"{columnName}.IsVisible") { Source = ColumnManager, Mode = BindingMode.TwoWay, Converter = new BooleanToVisibilityConverter() });
-            BindingOperations.SetBinding(column, DataGridTextColumn.SortDirectionProperty, new Binding($"{columnName}.SortDirection") { Source = ColumnManager, Mode = BindingMode.TwoWay });
             BindingOperations.SetBinding(column, DataGridTextColumn.MinWidthProperty, new Binding($"{columnName}.MinWidth") { Source = ColumnManager });
 
             if (column.DisplayIndex == 0)
@@ -222,8 +366,8 @@ namespace TreeGrid
         public TreeGridControl()
         {
             InitializeComponent();
-            this.TreeView.AddHandler(ScrollViewer.ScrollChangedEvent, (Delegate)new ScrollChangedEventHandler(this.TreeView_ScrollChanged));
-            this.TreeView.SelectedItemChanged += new RoutedPropertyChangedEventHandler<object>(this.TreeView_SelectedItemChanged);
+            SetHierarchicalDataTemplate();
+            SetHeaderStyle();
         }
 
         private void TreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
@@ -240,6 +384,34 @@ namespace TreeGrid
             {
                 ViewModel.Sort(gridColumnHeader.DisplayIndex);
             }
+        }
+
+        private void TreeView_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key != Key.Up || !(this.TreeView.SelectedItem is ITreeItem treeItem && treeItem.Parent == null))
+                return;
+            e.Handled = true;
+            if(ViewModel != null)
+            {
+                var firstHeader = GetFirstHeader(this.GridHeader);
+                firstHeader?.Focus();
+            }
+        }
+
+        private static DataGridColumnHeader GetFirstHeader(
+            DependencyObject reference
+        )
+        {
+            for (int childIndex = 0; childIndex < VisualTreeHelper.GetChildrenCount(reference); ++childIndex)
+            {
+                DependencyObject child = VisualTreeHelper.GetChild(reference, childIndex);
+                if (child is DataGridColumnHeader header1 && header1.Column is DataGridColumn col && col.DisplayIndex ==0)
+                    return header1;
+                DataGridColumnHeader header2 = GetFirstHeader(child);
+                if (header2 != null)
+                    return header2;
+            }
+            return null;
         }
     }
 }

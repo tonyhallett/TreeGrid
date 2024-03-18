@@ -7,7 +7,7 @@ namespace TreeGrid
         IColumnManager ColumnManager { get; }
         IEnumerable<ITreeItem> Items { get; }
         ITreeItem SelectedTreeViewItem { get; set; }
-
+        string TreeViewAutomationName { get; }
         void Sort(int displayIndex);
     }
 }

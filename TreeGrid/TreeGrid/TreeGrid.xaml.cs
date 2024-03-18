@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Common;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Windows;
@@ -12,7 +10,6 @@ using System.Windows.Media;
 
 namespace TreeGrid
 {
-
     /// <summary>
     /// Interaction logic for TreeGrid.xaml
     /// </summary>
@@ -22,19 +19,14 @@ namespace TreeGrid
 
         #region dependency properties
 
-
-
         public bool BindTextBlockForeground
         {
             get { return (bool)GetValue(BindTextBlockForegroundProperty); }
             set { SetValue(BindTextBlockForegroundProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for BindTextBlockForeground.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty BindTextBlockForegroundProperty =
             DependencyProperty.Register("BindTextBlockForeground", typeof(bool), typeof(TreeGridControl), new PropertyMetadata(true));
-
-
 
         public Brush TreeViewBackground
         {
@@ -42,11 +34,8 @@ namespace TreeGrid
             set { SetValue(TreeViewBackgroundProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for TreeViewBackground.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty TreeViewBackgroundProperty =
             DependencyProperty.Register("TreeViewBackground", typeof(Brush), typeof(TreeGridControl), new PropertyMetadata(new SolidColorBrush(Colors.White)));
-
-
 
         public Brush TreeViewForeground
         {
@@ -54,11 +43,8 @@ namespace TreeGrid
             set { SetValue(TreeViewForegroundProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for TreeViewForeground.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty TreeViewForegroundProperty =
             DependencyProperty.Register("TreeViewForeground", typeof(Brush), typeof(TreeGridControl), new PropertyMetadata(new SolidColorBrush(Colors.Black)));
-
-
 
         public Brush TreeGridControlBackground
         {
@@ -66,11 +52,8 @@ namespace TreeGrid
             set { SetValue(TreeGridControlBackgroundProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for TreeGridControlBackground.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty TreeGridControlBackgroundProperty =
             DependencyProperty.Register("TreeGridControlBackground", typeof(Brush), typeof(TreeGridControl) , new PropertyMetadata(new SolidColorBrush(Colors.White)));
-
-
 
         public Brush HeaderBackground
         {
@@ -78,11 +61,8 @@ namespace TreeGrid
             set { SetValue(HeaderBackgroundProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for HeaderBackground.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty HeaderBackgroundProperty =
             DependencyProperty.Register("HeaderBackground", typeof(Brush), typeof(TreeGridControl), new PropertyMetadata(new SolidColorBrush(Colors.White)));
-
-
 
         public Brush HeaderForeground
         {
@@ -90,11 +70,8 @@ namespace TreeGrid
             set { SetValue(HeaderForegroundProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for HeaderForeground.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty HeaderForegroundProperty =
             DependencyProperty.Register("HeaderForeground", typeof(Brush), typeof(TreeGridControl), new PropertyMetadata(new SolidColorBrush(Colors.Black)));
-
-
 
         public Brush HeaderGridLines
         {
@@ -102,11 +79,8 @@ namespace TreeGrid
             set { SetValue(HeaderGridLinesProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for HeaderGridLines.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty HeaderGridLinesProperty =
             DependencyProperty.Register("HeaderGridLines", typeof(Brush), typeof(TreeGridControl), new PropertyMetadata(new SolidColorBrush(Colors.White)));
-
-
 
         public Style HeaderStyle
         {
@@ -114,7 +88,6 @@ namespace TreeGrid
             set { SetValue(HeaderStyleProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for HeaderStyle.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty HeaderStyleProperty =
             DependencyProperty.Register("HeaderStyle", typeof(Style), typeof(TreeGridControl), new PropertyMetadata(null,OnHeaderStyleChanged));
 
@@ -126,35 +99,32 @@ namespace TreeGrid
 
         private void SetHeaderStyle()
         {
-            // Get the FocusableAndClickableColumnHeaderStyle from the resources
-            Style focusableAndClickableStyle = this.Resources["FocusableAndClickableColumnHeaderStyle"] as Style;
+            Style baseStyle = HeaderStyle ?? GetDefaultDataGridColumnHeaderStyle();
+            GridHeader.ColumnHeaderStyle = AddRequiredDataGridColumnHeaderSetters(baseStyle); ;
+        }
 
-            // If a HeaderStyle is provided, use it as the base style
-            // Otherwise, use the DataGridColumnHeaderStyle as the base style
-            Style baseStyle = HeaderStyle ?? (this.Resources["DataGridColumnHeaderStyle"] as Style);
+        private Style GetDefaultDataGridColumnHeaderStyle() => (this.Resources["DataGridColumnHeaderStyle"] as Style);
 
-            // Create a new style that is based on the base style
-            Style newStyle = new Style(typeof(DataGridColumnHeader), baseStyle);
+        private Style GetFocusableAndClickableColumnHeaderStyle() => (this.Resources["FocusableAndClickableColumnHeaderStyle"] as Style);
 
-            // Merge the FocusableAndClickableColumnHeaderStyle with the new style
+        private Style AddRequiredDataGridColumnHeaderSetters(Style baseStyle)
+        {
+            var focusableAndClickableStyle = GetFocusableAndClickableColumnHeaderStyle();
+            Style mergedStyle = new Style(typeof(DataGridColumnHeader), baseStyle);
+
             foreach (SetterBase setter in focusableAndClickableStyle.Setters)
             {
-                newStyle.Setters.Add(setter);
+                mergedStyle.Setters.Add(setter);
             }
             foreach (TriggerBase trigger in focusableAndClickableStyle.Triggers)
             {
-                newStyle.Triggers.Add(trigger);
+                mergedStyle.Triggers.Add(trigger);
             }
-
-            // Apply the resulting style to the DataGrid's ColumnHeaderStyle property
-            GridHeader.ColumnHeaderStyle = newStyle;
+            return mergedStyle;
         }
 
         public static readonly DependencyProperty HierarchicalDataTemplateProperty = DependencyProperty.Register(
-   nameof(HierarchicalDataTemplate),
-    typeof(HierarchicalDataTemplate),
-    typeof(TreeGridControl),
-    new PropertyMetadata(null, OnHierarchicalDataTemplateChanged));
+            nameof(HierarchicalDataTemplate), typeof(HierarchicalDataTemplate), typeof(TreeGridControl), new PropertyMetadata(null, OnHierarchicalDataTemplateChanged));
 
         public HierarchicalDataTemplate HierarchicalDataTemplate
         {

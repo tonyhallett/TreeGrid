@@ -311,10 +311,15 @@ namespace TreeGrid
 
         private void BindTreeItem(UIElement child, int index)
         {
+            string columnPropertyName = null;
+            if(child is FrameworkElement frameworkElement && frameworkElement.Tag is string tag)
+            {
+                columnPropertyName = tag;
+            }
             var displayIndexBinding = new Binding
             {
                 Source = this,
-                Path = GetColumnManagerPropertyPath("DisplayIndex", index)
+                Path = GetColumnManagerPropertyPath("DisplayIndex", index, columnPropertyName)
             };
 
             BindingOperations.SetBinding(child, Grid.ColumnProperty, displayIndexBinding);
@@ -323,7 +328,7 @@ namespace TreeGrid
                 var visibilityBinding = new Binding
                 {
                     Source = this,
-                    Path = GetColumnManagerPropertyPath("IsVisible", index),
+                    Path = GetColumnManagerPropertyPath("IsVisible", index, columnPropertyName),
                     Converter = new BooleanToVisibilityConverter()
                 };
 
@@ -338,9 +343,23 @@ namespace TreeGrid
             }
         }
 
+        private PropertyPath GetColumnManagerPropertyPath(string property, string columnPropertyName)
+        {
+            return new PropertyPath($"ViewModel.ColumnManager.{columnPropertyName}.{property}");
+        }
+
         private PropertyPath GetColumnManagerPropertyPath(string property, int index)
         {
             return new PropertyPath($"ViewModel.ColumnManager.{this.ColumnPropertyNames[index]}.{property}");
+        }
+
+        private PropertyPath GetColumnManagerPropertyPath(string property, int index, string columnPropertyName)
+        {
+            if(columnPropertyName != null)
+            {
+                return GetColumnManagerPropertyPath(property, columnPropertyName);
+            }
+            return GetColumnManagerPropertyPath(property, index);
         }
 
         private UIElement Reparent(Panel panel, Grid grid)

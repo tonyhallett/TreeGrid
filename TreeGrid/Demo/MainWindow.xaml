@@ -12,9 +12,9 @@
             <local:TreeGridControl.ItemTemplate>
                 <DataTemplate>
                     <StackPanel>
-                        <TextBlock Text="{Binding Name}" />
-                        <TextBlock Text="To"/>
-                        <TextBlock Text="World" />
+                        <TextBlock Tag="FirstColumn" Text="{Binding Name}" />
+                        <TextBlock Tag="SecondColumn" Text="To"/>
+                        <TextBlock Tag="ThirdColumn" Text="World" />
                     </StackPanel>
                 </DataTemplate>
             </local:TreeGridControl.ItemTemplate>

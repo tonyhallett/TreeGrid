@@ -1,17 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace TreeGrid
 {
-    public class TreeGridViewModel : ITreeGridViewModel
+    public class TreeGridViewModel : TreeGridViewModelBase<TreeItem,ColumnManager>
     {
-        private ColumnManager _columnManager = new ColumnManager();
         public TreeGridViewModel()
         {
-            _items[0].UpdateWidth(_columnManager.FirstColumn.Width.Value);
+            columnManagerImpl = new ColumnManager();
+            _items[0].UpdateWidth(columnManagerImpl.FirstColumn.Width.Value);
+            TreeViewAutomationName = "DemoTreeView";
+            SetItems(_items);
         }
-        public IColumnManager ColumnManager => _columnManager;
         private ObservableCollection<TreeItem> _items = new ObservableCollection<TreeItem>
         {
            new TreeItem(
@@ -21,28 +21,16 @@ namespace TreeGrid
                        "Child",
                        new TreeItem[]{new TreeItem("GC") })})
         };
-        public IEnumerable<ITreeItem> Items => _items;
 
-        private ITreeItem _selectedTreeViewItem;
-        public ITreeItem SelectedTreeViewItem
+        public override void Sort(int columnIndex)
         {
-            get => _selectedTreeViewItem;
-            set
-            {
-                _selectedTreeViewItem = value;
-            }
-        }
-
-        public string TreeViewAutomationName { get; } = "DemoTreeView";
-
-        public void Sort(int columnIndex)
-        {
-            _columnManager.SortColumns(columnIndex);
+            columnManagerImpl.SortColumns(columnIndex);
         }
 
         internal void Update()
         {
             this._items[0].Name = "Root" + DateTime.Now.Second;
         }
+
     }
 }

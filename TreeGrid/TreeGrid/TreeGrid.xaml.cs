@@ -18,7 +18,7 @@ namespace TreeGrid
     /// </summary>
     public partial class TreeGridControl : UserControl
     {
-        private List<string> ColumnNames { get; set; }
+        private List<string> ColumnPropertyNames { get; set; }
 
         #region dependency properties
 
@@ -223,7 +223,9 @@ namespace TreeGrid
             var firstColumn = ViewModel.ColumnManager.Columns[0];
             firstColumn.PropertyChanged += (s, e) =>
             {
-                if (e.PropertyName == "Width")
+                // double clicking the divider sets to auto - which is no good for GridWidth
+                // undone in DataGridColumnHeader_MouseDoubleClick
+                if (e.PropertyName == "Width" && !firstColumn.Width.IsAuto)
                 {
                     foreach(var treeItem in this.ViewModel.Items)
                     {
@@ -233,7 +235,7 @@ namespace TreeGrid
             };
         }
 
-        private IEnumerable<string> GetColumnNames()
+        private IEnumerable<string> GetColumnPropertyNames()
             => ViewModel.ColumnManager.GetType().GetProperties(
                 BindingFlags.Public | BindingFlags.Instance).Where(p => p.PropertyType == typeof(ColumnData))
                 .Select(p => p.Name);
@@ -242,8 +244,8 @@ namespace TreeGrid
         {
             GridHeader.Columns.Clear();
 
-            ColumnNames = GetColumnNames().ToList();
-            foreach (var columnName in ColumnNames)
+            ColumnPropertyNames = GetColumnPropertyNames().ToList();
+            foreach (var columnName in ColumnPropertyNames)
             {
                 GridHeader.Columns.Add(
                     CreateBoundGridHeaderColumn(columnName)
@@ -251,16 +253,17 @@ namespace TreeGrid
             }
         }
         
-        private DataGridTextColumn CreateBoundGridHeaderColumn(string columnName)
+        private DataGridTextColumn CreateBoundGridHeaderColumn(string columnPropertyName)
         {
             var column = new DataGridTextColumn();
             var ColumnManager = ViewModel.ColumnManager;
-            BindingOperations.SetBinding(column, DataGridTextColumn.HeaderProperty, new Binding($"{columnName}.Name") { Source = ColumnManager });
-            BindingOperations.SetBinding(column, DataGridTextColumn.DisplayIndexProperty, new Binding($"{columnName}.DisplayIndex") { Source = ColumnManager, FallbackValue = 1, Mode = BindingMode.TwoWay });
-            BindingOperations.SetBinding(column, DataGridTextColumn.WidthProperty, new Binding($"{columnName}.Width") { Source = ColumnManager, Mode = BindingMode.TwoWay });
-            BindingOperations.SetBinding(column, DataGridTextColumn.VisibilityProperty, new Binding($"{columnName}.IsVisible") { Source = ColumnManager, Mode = BindingMode.TwoWay, Converter = new BooleanToVisibilityConverter() });
-            BindingOperations.SetBinding(column, DataGridTextColumn.MinWidthProperty, new Binding($"{columnName}.MinWidth") { Source = ColumnManager });
-            BindingOperations.SetBinding(column, DataGridTextColumn.SortDirectionProperty, new Binding($"{columnName}.SortDirection") { Source = ColumnManager, Mode = BindingMode.TwoWay });
+            
+            BindingOperations.SetBinding(column, DataGridTextColumn.HeaderProperty, new Binding($"{columnPropertyName}.Name") { Source = ColumnManager });
+            BindingOperations.SetBinding(column, DataGridTextColumn.DisplayIndexProperty, new Binding($"{columnPropertyName}.DisplayIndex") { Source = ColumnManager, FallbackValue = 1, Mode = BindingMode.TwoWay });
+            BindingOperations.SetBinding(column, DataGridTextColumn.WidthProperty, new Binding($"{columnPropertyName}.Width") { Source = ColumnManager, Mode = BindingMode.TwoWay });
+            BindingOperations.SetBinding(column, DataGridTextColumn.VisibilityProperty, new Binding($"{columnPropertyName}.IsVisible") { Source = ColumnManager, Mode = BindingMode.TwoWay, Converter = new BooleanToVisibilityConverter() });
+            BindingOperations.SetBinding(column, DataGridTextColumn.MinWidthProperty, new Binding($"{columnPropertyName}.MinWidth") { Source = ColumnManager });
+            BindingOperations.SetBinding(column, DataGridTextColumn.SortDirectionProperty, new Binding($"{columnPropertyName}.SortDirection") { Source = ColumnManager, Mode = BindingMode.TwoWay });
 
             if (column.DisplayIndex == 0)
             {
@@ -337,7 +340,7 @@ namespace TreeGrid
 
         private PropertyPath GetColumnManagerPropertyPath(string property, int index)
         {
-            return new PropertyPath($"ViewModel.ColumnManager.{this.ColumnNames[index]}.{property}");
+            return new PropertyPath($"ViewModel.ColumnManager.{this.ColumnPropertyNames[index]}.{property}");
         }
 
         private UIElement Reparent(Panel panel, Grid grid)
@@ -352,9 +355,14 @@ namespace TreeGrid
 
         private void TreeViewItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (!(sender is TreeViewItem treeViewItem))
-                return;
-           
+            if (ViewModel != null  && sender is TreeViewItem treeViewItem)
+            {
+                var treeItem = treeViewItem.DataContext as ITreeItem;
+                if (!treeItem.Children.Any())
+                {
+                    ViewModel.LeafTreeItemDoubleClick(treeItem);
+                }
+            }
         }
 
         private void DataGridColumnHeader_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -404,6 +412,23 @@ namespace TreeGrid
             {
                 ViewModel.Sort(gridColumnHeader.DisplayIndex);
             }
+        }
+
+        private void DataGridColumnHeader_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if(ViewModel != null)
+            {
+                foreach (var dataColumn in GridHeader.Columns)
+                {
+                    var columnData = ViewModel.ColumnManager.Columns.First(c => c.DisplayIndex == dataColumn.DisplayIndex);
+                    // double clicking the divider sets to auto - which is no good for GridWidth
+                    if (columnData.Width.IsAuto)
+                    {
+                        dataColumn.Width = dataColumn.MinWidth;
+                    }
+                }
+            }
+            
         }
 
         private void TreeView_PreviewKeyDown(object sender, KeyEventArgs e)

@@ -6,8 +6,10 @@ namespace TreeGrid
     {
         IColumnManager ColumnManager { get; }
         IEnumerable<ITreeItem> Items { get; }
-        ITreeItem SelectedTreeViewItem { get; set; }
+        ITreeItem SelectedTreeViewItem { set; }
         string TreeViewAutomationName { get; }
         void Sort(int displayIndex);
+        void LeafTreeItemDoubleClick(ITreeItem treeItem);
+        
     }
 }

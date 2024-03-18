@@ -10,6 +10,7 @@ namespace TreeGrid
         private bool _isSelected;
         private bool _isExpanded;
         private double _rootWidth;
+        private ObservableCollection<ITreeItem> observableChildren = new ObservableCollection<ITreeItem>();
         public TreeItem(string name,IEnumerable<TreeItem> children = null)
         {
             Name = name;
@@ -17,7 +18,7 @@ namespace TreeGrid
             {
                 foreach (var child in children)
                 {
-                    Children.Add(child);
+                    observableChildren.Add(child);
                     child.Parent = this;
                 }
             }
@@ -27,7 +28,7 @@ namespace TreeGrid
             get => this._name;
             set => this.Set<string>(ref this._name, value, nameof(Name));
         }
-        public ObservableCollection<TreeItem> Children { get;  } = new ObservableCollection<TreeItem>();
+        public IEnumerable<ITreeItem> Children { get => observableChildren; }
 
         public bool IsSelected
         {

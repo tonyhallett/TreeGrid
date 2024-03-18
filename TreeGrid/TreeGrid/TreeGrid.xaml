@@ -72,30 +72,12 @@
                     </Setter>
                 </Trigger>
             </Style.Triggers>
-            <!--<Setter Property="ContentControl.ContentTemplate">
-                <Setter.Value>
-                    <DataTemplate>
-                        <Border Padding="4 2 4 2">
-                            <DockPanel>
-                                <TextBlock Margin="0 0 5 0"  Text="{Binding Name}"/>
-
-                                <Path x:Name="upArrow" DockPanel.Dock="Right" StrokeThickness="1"
-                        Fill="{Binding HeaderForeground, RelativeSource={RelativeSource AncestorType=UserControl}}" Data="M 0,10 L 10,10 5,5 0,10 "
-                        Visibility="{Binding SortDirectionValue, Converter={StaticResource SortDirectionToVisibilityConverter}, ConverterParameter=Ascending}"/>
-                                <Path x:Name="downArrow" DockPanel.Dock="Right" StrokeThickness="1"
-                        Fill="{Binding HeaderForeground, RelativeSource={RelativeSource AncestorType=UserControl}}" Data="M 0,5 L 5,10 10,5 0,5 "
-                        Visibility="{Binding SortDirectionValue, Converter={StaticResource SortDirectionToVisibilityConverter}, ConverterParameter=Descending}"/>
-                            </DockPanel>
-                        </Border>
-                    </DataTemplate>
-                </Setter.Value>
-            </Setter>-->
-
         </Style>
         <Style x:Key="FocusableAndClickableColumnHeaderStyle" TargetType="{x:Type DataGridColumnHeader}">
             <Style.Setters>
                 <Setter Property="UIElement.Focusable" Value="True"/>
                 <EventSetter Event="Button.Click" Handler="DataGridColumnHeader_Click"/>
+                <EventSetter Event="MouseDoubleClick" Handler="DataGridColumnHeader_MouseDoubleClick"/>
             </Style.Setters>
         </Style>
     </UserControl.Resources>
@@ -104,15 +86,11 @@
                   HorizontalScrollBarVisibility="Hidden" HorizontalAlignment="Left">
             <DataGrid x:Name="GridHeader" 
                       UIElement.PreviewKeyDown="DataGridColumnHeader_PreviewKeyDown"  AutomationProperties.Name="ColumnsHeader" BorderThickness="0">
-                <DataGrid.Resources>
-
-                </DataGrid.Resources>
             </DataGrid>
         </ScrollViewer>
         <TreeView x:Name="TreeView" 
                   AutomationProperties.Name="{Binding ViewModel.TreeViewAutomationName}" 
                   SelectedItemChanged="TreeView_SelectedItemChanged"
-                  Control.MouseDoubleClick="TreeViewItem_MouseDoubleClick"  
                   ScrollViewer.ScrollChanged="TreeView_ScrollChanged"
                   PreviewKeyDown="TreeView_PreviewKeyDown"
                   VerticalAlignment="Stretch" 
@@ -127,30 +105,14 @@
                 <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="Transparent"/>
             </TreeView.Resources>
             <ItemsControl.ItemContainerStyle>
-                <Style>
+                <Style TargetType="{x:Type TreeViewItem}">
                     <Setter Property="TreeViewItem.IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
                     <Setter Property="TreeViewItem.IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
                     <Setter Property="AutomationProperties.Name" Value="{Binding Name, StringFormat={}Node}"/>
                     <EventSetter Event="FrameworkElement.RequestBringIntoView" Handler="TreeViewItem_RequestBringIntoView"/>
+                    <EventSetter Event="MouseDoubleClick" Handler="TreeViewItem_MouseDoubleClick"/>
                 </Style>
             </ItemsControl.ItemContainerStyle>
-
-            <!--<ItemsControl.ItemTemplate>
-                <HierarchicalDataTemplate ItemsSource="{Binding Children}">
-                    <DockPanel>
-                        <Border Padding="0 2 0 2" Background="{Binding Background}">
-                            <Grid>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="{Binding Width}"/>
-                                    </Grid.ColumnDefinitions>
-                                    <local:TreeItemContentControl Content="{Binding}" ContentTemplate="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type local:TreeGridControl},AncestorLevel=1},Path=ItemTemplate}" />
-                                </Grid>
-                            </Grid>
-                        </Border>
-                    </DockPanel>
-                </HierarchicalDataTemplate>
-            </ItemsControl.ItemTemplate>-->
         </TreeView>
     </DockPanel>
 </UserControl>

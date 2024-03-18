@@ -83,12 +83,12 @@ namespace TreeGrid
             set => this.Set<GridLength>(ref this._gridWidth, value, nameof(GridWidth));
         }
 
-        public ListSortDirection? SortDirectionValue
+        public ListSortDirection? SortDirection
         {
             get => this._sortDirection;
             set
             {
-                this.Set<ListSortDirection?>(ref this._sortDirection, value, nameof(SortDirectionValue));
+                this.Set<ListSortDirection?>(ref this._sortDirection, value, nameof(SortDirection));
                 this.OnPropertyChanged("Visibility");
             }
         }

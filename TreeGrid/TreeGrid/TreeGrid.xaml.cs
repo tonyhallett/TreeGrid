@@ -24,6 +24,18 @@ namespace TreeGrid
 
 
 
+        public bool BindTextBlockForeground
+        {
+            get { return (bool)GetValue(BindTextBlockForegroundProperty); }
+            set { SetValue(BindTextBlockForegroundProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for BindTextBlockForeground.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty BindTextBlockForegroundProperty =
+            DependencyProperty.Register("BindTextBlockForeground", typeof(bool), typeof(TreeGridControl), new PropertyMetadata(true));
+
+
+
         public Brush TreeViewBackground
         {
             get { return (Brush)GetValue(TreeViewBackgroundProperty); }
@@ -200,6 +212,7 @@ namespace TreeGrid
                 new DragBeforeFirstBlocker(ViewModel.ColumnManager, GridHeader, () => ViewModel.ColumnManager.SortColumnsArray());
             }
         }
+       
         private void InitializeColumns()
         {
             if(ViewModel == null)
@@ -242,12 +255,12 @@ namespace TreeGrid
         {
             var column = new DataGridTextColumn();
             var ColumnManager = ViewModel.ColumnManager;
-            // necessary to prevent duplicate column sort icons and not binding the  DataGridTextColumn.SortDirectionProperty
-            BindingOperations.SetBinding(column, DataGridTextColumn.HeaderProperty, new Binding($"{columnName}") { Source = ColumnManager });
+            BindingOperations.SetBinding(column, DataGridTextColumn.HeaderProperty, new Binding($"{columnName}.Name") { Source = ColumnManager });
             BindingOperations.SetBinding(column, DataGridTextColumn.DisplayIndexProperty, new Binding($"{columnName}.DisplayIndex") { Source = ColumnManager, FallbackValue = 1, Mode = BindingMode.TwoWay });
             BindingOperations.SetBinding(column, DataGridTextColumn.WidthProperty, new Binding($"{columnName}.Width") { Source = ColumnManager, Mode = BindingMode.TwoWay });
             BindingOperations.SetBinding(column, DataGridTextColumn.VisibilityProperty, new Binding($"{columnName}.IsVisible") { Source = ColumnManager, Mode = BindingMode.TwoWay, Converter = new BooleanToVisibilityConverter() });
             BindingOperations.SetBinding(column, DataGridTextColumn.MinWidthProperty, new Binding($"{columnName}.MinWidth") { Source = ColumnManager });
+            BindingOperations.SetBinding(column, DataGridTextColumn.SortDirectionProperty, new Binding($"{columnName}.SortDirection") { Source = ColumnManager, Mode = BindingMode.TwoWay });
 
             if (column.DisplayIndex == 0)
             {
@@ -312,6 +325,13 @@ namespace TreeGrid
                 };
 
                 BindingOperations.SetBinding(child, UIElement.VisibilityProperty, visibilityBinding);
+            }
+
+            if(child is TextBlock textBlock && this.BindTextBlockForeground)
+            {
+                var foregroundBinding = new Binding("Foreground");
+
+                BindingOperations.SetBinding(textBlock, TextBlock.ForegroundProperty, foregroundBinding);
             }
         }
 

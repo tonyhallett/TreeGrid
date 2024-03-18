@@ -27,7 +27,52 @@
             <Setter Property="Control.Background" Value="{Binding HeaderBackground, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
             <Setter Property="Control.Foreground" Value="{Binding HeaderForeground, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
             <Setter Property="Control.BorderBrush" Value="{Binding HeaderGridLines, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-            <Setter Property="ContentControl.ContentTemplate">
+            <Style.Triggers>
+                <Trigger Property="DataGridColumnHeader.SortDirection" Value="{x:Null}">
+                    <Setter Property="ContentControl.ContentTemplate">
+                        <Setter.Value>
+                            <DataTemplate>
+                                <Border Padding="4 2 4 2">
+                                    <DockPanel>
+                                        <TextBlock Margin="0" Text="{Binding}"/>
+                                    </DockPanel>
+                                </Border>
+                            </DataTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+                <Trigger Property="DataGridColumnHeader.SortDirection" Value="Ascending">
+                    <Setter Property="ContentControl.ContentTemplate">
+                        <Setter.Value>
+                            <DataTemplate>
+                                <Border Padding="4 2 4 2">
+                                    <DockPanel>
+                                        <Path x:Name="upArrow" DockPanel.Dock="Right" x:Uid="upArrow" StrokeThickness="1"
+                        Fill="{Binding HeaderForeground, RelativeSource={RelativeSource AncestorType=UserControl}}" Data="M 0,10 L 10,10 5,5 0,10 "/>
+                                        <TextBlock Margin="0 0 5 0" Text="{Binding}"/>
+                                    </DockPanel>
+                                </Border>
+                            </DataTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+                <Trigger Property="DataGridColumnHeader.SortDirection" Value="Descending">
+                    <Setter Property="ContentControl.ContentTemplate">
+                        <Setter.Value>
+                            <DataTemplate>
+                                <Border Padding="4 2 4 2">
+                                    <DockPanel>
+                                        <Path x:Name="downArrow" DockPanel.Dock="Right" x:Uid="downArrow" StrokeThickness="1"
+                        Fill="{Binding HeaderForeground, RelativeSource={RelativeSource AncestorType=UserControl}}" Data="M 0,5 L 5,10 10,5 0,5 "/>
+                                        <TextBlock Margin="0 0 5 0" Text="{Binding}"/>
+                                    </DockPanel>
+                                </Border>
+                            </DataTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+            <!--<Setter Property="ContentControl.ContentTemplate">
                 <Setter.Value>
                     <DataTemplate>
                         <Border Padding="4 2 4 2">
@@ -44,7 +89,7 @@
                         </Border>
                     </DataTemplate>
                 </Setter.Value>
-            </Setter>
+            </Setter>-->
 
         </Style>
         <Style x:Key="FocusableAndClickableColumnHeaderStyle" TargetType="{x:Type DataGridColumnHeader}">

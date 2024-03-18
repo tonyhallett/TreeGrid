@@ -22,22 +22,22 @@ namespace TreeGrid
             {
                 if (column.DisplayIndex == columnIndex)
                 {
-                    if (column.SortDirectionValue == null)
+                    if (column.SortDirection == null)
                     {
-                        column.SortDirectionValue = ListSortDirection.Ascending;
+                        column.SortDirection = ListSortDirection.Ascending;
                     }
-                    else if (column.SortDirectionValue == ListSortDirection.Ascending)
+                    else if (column.SortDirection == ListSortDirection.Ascending)
                     {
-                        column.SortDirectionValue = ListSortDirection.Descending;
+                        column.SortDirection = ListSortDirection.Descending;
                     }
                     else
                     {
-                        column.SortDirectionValue = ListSortDirection.Ascending;
+                        column.SortDirection = ListSortDirection.Ascending;
                     }
                 }
                 else
                 {
-                    column.SortDirectionValue = null;
+                    column.SortDirection = null;
                 }
             }
         }

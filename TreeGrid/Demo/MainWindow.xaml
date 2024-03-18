@@ -8,7 +8,11 @@
         Title="MainWindow" Height="450" Width="800">
     <StackPanel>
         <Button Click="Button_Click">Change</Button>
-        <local:TreeGridControl ViewModel="{Binding ViewModel}">
+        <local:TreeGridControl ViewModel="{Binding ViewModel}" 
+                    TreeViewBackground="Orange" TreeViewForeground="GhostWhite" TreeGridControlBackground="Purple" 
+                    HeaderBackground="LightYellow" HeaderForeground="SlateGray"
+                    HeaderGridLines="DeepPink"
+        >
             <local:TreeGridControl.ItemTemplate>
                 <DataTemplate>
                     <StackPanel>

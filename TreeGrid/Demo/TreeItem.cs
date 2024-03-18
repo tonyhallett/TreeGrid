@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 
 namespace TreeGrid
 {
-
     public class TreeItem : TreeItemBase
     {
         private bool _isExpanded;

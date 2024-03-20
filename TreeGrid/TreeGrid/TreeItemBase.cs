@@ -77,14 +77,16 @@ namespace TreeGrid
             }
         }
     
-        private int WidthMultiplier => this.Parent != null ? (this.Parent as TreeItemBase).WidthMultiplier + 1 : 1;
-
+        private int Depth => this.Parent != null ? (this.Parent as TreeItemBase).Depth + 1 : 1;
+        protected virtual double AdditionalAdjustment => 0.0;
         public void AdjustWidth(double width)
         {
             this._rootWidth = width;
-            this.AdjustedWidth = new GridLength(this._rootWidth - (19 * this.WidthMultiplier));
+            this.AdjustedWidth = new GridLength(width - GetAdjustedWidth(Depth));
             foreach (var treeItem in this.Children)
                 treeItem.AdjustWidth(width);
         }
+
+        protected virtual double GetAdjustedWidth(int depth) => (19 * depth) + AdditionalAdjustment;
     }
 }

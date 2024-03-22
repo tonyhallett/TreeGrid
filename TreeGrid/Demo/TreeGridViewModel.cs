@@ -7,8 +7,8 @@ namespace TreeGrid
     {
         public TreeGridViewModel()
         {
-            columnManagerImpl = new ColumnManager();
-            _items[0].AdjustWidth(columnManagerImpl.FirstColumn.Width.Value);
+            ColumnManagerImpl = new ColumnManager();
+            _items[0].AdjustWidth(ColumnManagerImpl.FirstColumn.Width.Value);
             TreeViewAutomationName = "DemoTreeView";
             SetItems(_items);
         }
@@ -24,7 +24,7 @@ namespace TreeGrid
 
         public override void Sort(int columnIndex)
         {
-            columnManagerImpl.SortColumns(columnIndex);
+            ColumnManagerImpl.SortColumns(columnIndex);
         }
 
         internal void Update()
